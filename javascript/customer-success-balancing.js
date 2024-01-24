@@ -25,6 +25,16 @@ function verifyCustomerSucessAbstentions(customerSuccessAway, customerSuccessLen
     throw RangeError("invalid customerSuccessAway array length!(over customerSucess.length / 2)");
 }
 
+function filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess){
+  return customerSuccess.filter((cs) => {
+    for (let index = 0; index < customerSuccessAway.length; index += 1) {
+      if ( customerSuccessAway[index] == cs.id)
+        return false;
+    };
+    return true
+  });
+}
+
 /**
  * Returns the id of the CustomerSuccess with the most customers
  * @param {array} customerSuccess
@@ -41,14 +51,9 @@ function customerSuccessBalancing(
   verifyCustomerSuccess(customerSuccess);
   verifyCustomerSucessAbstentions(customerSuccessAway, customerSuccess.length)
 
-  let availableCustomerSuccess = customerSuccess.filter((cs) => {
-    for (let index = 0; index < customerSuccessAway.length; index += 1) {
-      if ( customerSuccessAway[index] == cs.id)
-        return false;
-    };
-    return true
-  });
+  let availableCustomerSuccess = filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess);
 
+  // ordena os arrays pelo score de forma crescente
   availableCustomerSuccess.sort((a,b) => a.score - b.score);
   customers.sort((a,b) => a.score - b.score);
 
