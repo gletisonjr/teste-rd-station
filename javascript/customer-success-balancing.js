@@ -17,6 +17,12 @@ function verifyCustomerSuccess(customerSuccess) {
       throw RangeError("invalid customerSuccess id number!(over 1.000)");
     if (customerSuccess[index].score > 10000)
       throw RangeError("invalid customerSuccess score number!(over 10.000)");
+    for (let index2 = 0; index2 < customerSuccess.length; index2 += 1) {
+      if (index == index2) 
+        continue;
+      if (customerSuccess[index].score == customerSuccess[index2].score)
+      throw Error("2 or more customerSuccess with same score number!");
+    }
   }
 }
 
@@ -81,37 +87,15 @@ function customerSuccessBalancing(
   customers.sort((a,b) => a.score - b.score);
 
   let customersAtended = connectCustomerSucessToCustomers(customers, availableCustomerSuccess);
-
-  // for (let index = 0; index < availableCustomerSuccess.length; index += 1) {
-  //   let customersByCS = [];
-  //   for (let index2 = 0; index2 < customers.length; index2 += 1) {
-  //     if (customersAtended.some((element) => element.customerId.includes(customers[index2].id)))
-  //       continue;
-  //     if (availableCustomerSuccess[index].score < customers[index2].score)
-  //       break;
-  //     customersByCS.push(customers[index2].id)
-  //   };
-  //   if (customersByCS.length == 0)
-  //     continue;
-  //   customersAtended.push({
-  //     customerId:  customersByCS,
-  //     customerSuccessId: availableCustomerSuccess[index].id
-  //   });
-  // };
   
   if (customersAtended.length == 0)
     return 0;
   if (customersAtended.length == 1)
     return customersAtended[0].customerSuccessId;
-  if (customersAtended.length > 1)
+  if (customersAtended.length > 1) // ordena as conexões em forma decrescente
     customersAtended.sort((a,b) => b.customerId.length - a.customerId.length);
-
   if (customersAtended[0].customerId.length == customersAtended[1].customerId.length)
     return 0;
-
-  console.log(customers);
-  console.log(availableCustomerSuccess);
-  console.log(customersAtended);
 
   return customersAtended[0].customerSuccessId;
 }
