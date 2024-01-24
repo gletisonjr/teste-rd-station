@@ -1,4 +1,4 @@
-function verifyCustomers(customers){
+function verifyCustomers(customers) {
   if (customers.length > 1000000)
     throw RangeError("invalid customers array length!(over 1.000.000)");
   for (let index = 0; index < customers.length; index += 1) {
@@ -9,7 +9,7 @@ function verifyCustomers(customers){
   }
 }
 
-function verifyCustomerSuccess(customerSuccess){
+function verifyCustomerSuccess(customerSuccess) {
   if (customerSuccess.length > 1000)
     throw RangeError("invalid customers array length!(over 1.000)");
   for (let index = 0; index < customerSuccess.length; index += 1) {
@@ -20,12 +20,12 @@ function verifyCustomerSuccess(customerSuccess){
   }
 }
 
-function verifyCustomerSucessAbstentions(customerSuccessAway, customerSuccessLength){
+function verifyCustomerSucessAbstentions(customerSuccessAway, customerSuccessLength) {
   if (customerSuccessAway.length > Math.floor(customerSuccessLength / 2))
     throw RangeError("invalid customerSuccessAway array length!(over customerSucess.length / 2)");
 }
 
-function filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess){
+function filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess) {
   return customerSuccess.filter((cs) => {
     for (let index = 0; index < customerSuccessAway.length; index += 1) {
       if ( customerSuccessAway[index] == cs.id)
@@ -33,6 +33,29 @@ function filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess){
     };
     return true
   });
+}
+
+function connectCustomerSucessToCustomers(customers, availableCustomerSuccess) {
+  let customersAtendedByCS = [];
+
+  for (let index = 0; index < availableCustomerSuccess.length; index += 1) {
+    let customersByCS = [];
+    for (let index2 = 0; index2 < customers.length; index2 += 1) {
+      if (customersAtendedByCS.some((element) => element.customerId.includes(customers[index2].id)))
+        continue;
+      if (availableCustomerSuccess[index].score < customers[index2].score)
+        break;
+      customersByCS.push(customers[index2].id)
+    };
+    if (customersByCS.length == 0)
+      continue;
+    customersAtendedByCS.push({
+      customerId:  customersByCS,
+      customerSuccessId: availableCustomerSuccess[index].id
+    });
+  };
+
+  return customersAtendedByCS;
 }
 
 /**
@@ -57,24 +80,24 @@ function customerSuccessBalancing(
   availableCustomerSuccess.sort((a,b) => a.score - b.score);
   customers.sort((a,b) => a.score - b.score);
 
-  let customersAtended = []; // array que liga os clientes aos CSs
+  let customersAtended = connectCustomerSucessToCustomers(customers, availableCustomerSuccess);
 
-  for (let index = 0; index < availableCustomerSuccess.length; index += 1) {
-    let customersByCS = [];
-    for (let index2 = 0; index2 < customers.length; index2 += 1) {
-      if (customersAtended.some((element) => element.customerId.includes(customers[index2].id)))
-        continue;
-      if (availableCustomerSuccess[index].score < customers[index2].score)
-        break;
-      customersByCS.push(customers[index2].id)
-    };
-    if (customersByCS.length == 0)
-      continue;
-    customersAtended.push({
-      customerId:  customersByCS,
-      customerSuccessId: availableCustomerSuccess[index].id
-    });
-  };
+  // for (let index = 0; index < availableCustomerSuccess.length; index += 1) {
+  //   let customersByCS = [];
+  //   for (let index2 = 0; index2 < customers.length; index2 += 1) {
+  //     if (customersAtended.some((element) => element.customerId.includes(customers[index2].id)))
+  //       continue;
+  //     if (availableCustomerSuccess[index].score < customers[index2].score)
+  //       break;
+  //     customersByCS.push(customers[index2].id)
+  //   };
+  //   if (customersByCS.length == 0)
+  //     continue;
+  //   customersAtended.push({
+  //     customerId:  customersByCS,
+  //     customerSuccessId: availableCustomerSuccess[index].id
+  //   });
+  // };
   
   if (customersAtended.length == 0)
     return 0;
