@@ -1,3 +1,10 @@
+/**
+ * Verifies if all the given customers are within the specifications:
+ * - No more than 1.000.000 customers
+ * - No customer id greater than 1.000.000
+ * - No customer score above 100.000
+ * @param {array} customers
+ */
 function verifyCustomers(customers) {
   if (customers.length > 1000000)
     throw RangeError("invalid customers array length!(over 1.000.000)");
@@ -9,6 +16,14 @@ function verifyCustomers(customers) {
   }
 }
 
+/**
+ * Verifies if all the given customerSuccesses are within the specifications:
+ * - No more than 1.000 customers
+ * - No customerSuccess id greater than 1.000
+ * - No customerSuccess score above 10.000
+ * - Each customerSucess score must be unique
+ * @param {array} customerSuccess
+ */
 function verifyCustomerSuccess(customerSuccess) {
   if (customerSuccess.length > 1000)
     throw RangeError("invalid customers array length!(over 1.000)");
@@ -21,16 +36,26 @@ function verifyCustomerSuccess(customerSuccess) {
       if (index == index2) 
         continue;
       if (customerSuccess[index].score == customerSuccess[index2].score)
-      throw Error("2 or more customerSuccess with same score number!");
+        throw Error("2 or more customerSuccess with same score number!");
     }
   }
 }
-
+/**
+ * Verifies if  the given customerSuccesses Abstentions are 
+ * at maximum half rounded to floor the CustomerSucess quantity:
+ * @param {int} customerSuccessLength
+ * @param {array} customerSuccessAway
+ */
 function verifyCustomerSucessAbstentions(customerSuccessAway, customerSuccessLength) {
   if (customerSuccessAway.length > Math.floor(customerSuccessLength / 2))
     throw RangeError("invalid customerSuccessAway array length!(over customerSucess.length / 2)");
 }
 
+/**
+ * Returns the CustomerSuccesses that should be attending
+ * @param {array} customerSuccess
+ * @param {array} customerSuccessAway
+ */
 function filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess) {
   return customerSuccess.filter((cs) => {
     for (let index = 0; index < customerSuccessAway.length; index += 1) {
@@ -41,13 +66,19 @@ function filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess) {
   });
 }
 
+/**
+ * Returns an array with the ids of the customerSucess and its customers that he/she attends.
+ * Returns an empty array if no CustomerSuccess attends
+ * @param {array} availableCustomerSuccess
+ * @param {array} customers
+ */
 function connectCustomerSucessToCustomers(customers, availableCustomerSuccess) {
-  let customersAtendedByCS = [];
+  let customersAttendedByCS = [];
 
   for (let index = 0; index < availableCustomerSuccess.length; index += 1) {
     let customersByCS = [];
     for (let index2 = 0; index2 < customers.length; index2 += 1) {
-      if (customersAtendedByCS.some((element) => element.customerId.includes(customers[index2].id)))
+      if (customersAttendedByCS.some((element) => element.customerId.includes(customers[index2].id)))
         continue;
       if (availableCustomerSuccess[index].score < customers[index2].score)
         break;
@@ -55,13 +86,13 @@ function connectCustomerSucessToCustomers(customers, availableCustomerSuccess) {
     };
     if (customersByCS.length == 0)
       continue;
-    customersAtendedByCS.push({
+    customersAttendedByCS.push({
       customerId:  customersByCS,
       customerSuccessId: availableCustomerSuccess[index].id
     });
   };
 
-  return customersAtendedByCS;
+  return customersAttendedByCS;
 }
 
 /**
@@ -82,22 +113,23 @@ function customerSuccessBalancing(
 
   let availableCustomerSuccess = filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess);
 
-  // ordena os arrays pelo score de forma crescente
+  // sorts the arrays in crescent order
   availableCustomerSuccess.sort((a,b) => a.score - b.score);
   customers.sort((a,b) => a.score - b.score);
 
-  let customersAtended = connectCustomerSucessToCustomers(customers, availableCustomerSuccess);
+  let customersAttendedByCS = connectCustomerSucessToCustomers(customers, availableCustomerSuccess);
   
-  if (customersAtended.length == 0)
+  if (customersAttendedByCS.length == 0)
     return 0;
-  if (customersAtended.length == 1)
-    return customersAtended[0].customerSuccessId;
-  if (customersAtended.length > 1) // ordena as conexões em forma decrescente
-    customersAtended.sort((a,b) => b.customerId.length - a.customerId.length);
-  if (customersAtended[0].customerId.length == customersAtended[1].customerId.length)
+  if (customersAttendedByCS.length == 1)
+    return customersAttendedByCS[0].customerSuccessId;
+  // sorts the attendances by the customers's quantity attended in decrescent order
+  if (customersAttendedByCS.length > 1) 
+    customersAttendedByCS.sort((a,b) => b.customerId.length - a.customerId.length);
+  if (customersAttendedByCS[0].customerId.length == customersAttendedByCS[1].customerId.length)
     return 0;
 
-  return customersAtended[0].customerSuccessId;
+  return customersAttendedByCS[0].customerSuccessId;
 }
 
 test("Scenario 1", () => {
