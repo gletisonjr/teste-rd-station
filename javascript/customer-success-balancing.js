@@ -9,11 +9,52 @@ function customerSuccessBalancing(
   customers,
   customerSuccessAway
 ) {
-  /**
-   * ===============================================
-   * =========== Write your solution here ==========
-   * ===============================================
-   */
+
+  let availableCustomerSuccess = customerSuccess.filter((cs) => {
+    for (let index = 0; index < customerSuccessAway.length; index += 1) {
+      if ( customerSuccessAway[index] == cs.id)
+        return false;
+    };
+    return true
+  });
+
+  availableCustomerSuccess.sort((a,b) => a.score - b.score);
+  customers.sort((a,b) => a.score - b.score);
+
+  let customersAtended = []; // array que liga os clientes aos CSs
+
+  for (let index = 0; index < availableCustomerSuccess.length; index += 1) {
+    let customersByCS = [];
+    for (let index2 = 0; index2 < customers.length; index2 += 1) {
+      if (customersAtended.some((element) => element.customerId.includes(customers[index2].id)))
+        continue;
+      if (availableCustomerSuccess[index].score < customers[index2].score)
+        break;
+      customersByCS.push(customers[index2].id)
+    };
+    if (customersByCS.length == 0)
+      continue;
+    customersAtended.push({
+      customerId:  customersByCS,
+      customerSuccessId: availableCustomerSuccess[index].id
+    });
+  };
+  
+  if (customersAtended.length == 0)
+    return 0;
+  if (customersAtended.length == 1)
+    return customersAtended[0].customerSuccessId;
+  if (customersAtended.length > 1)
+    customersAtended.sort((a,b) => b.customerId.length - a.customerId.length);
+
+  if (customersAtended[0].customerId.length == customersAtended[1].customerId.length)
+    return 0;
+
+  console.log(customers);
+  console.log(availableCustomerSuccess);
+  console.log(customersAtended);
+
+  return customersAtended[0].customerSuccessId;
 }
 
 test("Scenario 1", () => {
