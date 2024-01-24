@@ -1,3 +1,30 @@
+function verifyCustomers(customers){
+  if (customers.length > 1000000)
+    throw RangeError("invalid customers array length!(over 1.000.000)");
+  for (let index = 0; index < customers.length; index += 1) {
+    if (customers[index].id > 1000000)
+      throw RangeError("invalid customer id number!(over 1.000.000)");
+    if (customers[index].score > 100000)
+      throw RangeError("invalid customer score number!(over 100.000)");
+  }
+}
+
+function verifyCustomerSuccess(customerSuccess){
+  if (customerSuccess.length > 1000)
+    throw RangeError("invalid customers array length!(over 1.000)");
+  for (let index = 0; index < customerSuccess.length; index += 1) {
+    if (customerSuccess[index].id > 1000)
+      throw RangeError("invalid customerSuccess id number!(over 1.000)");
+    if (customerSuccess[index].score > 10000)
+      throw RangeError("invalid customerSuccess score number!(over 10.000)");
+  }
+}
+
+function verifyCustomerSucessAbstentions(customerSuccessAway, customerSuccessLength){
+  if (customerSuccessAway.length > Math.floor(customerSuccessLength / 2))
+    throw RangeError("invalid customerSuccessAway array length!(over customerSucess.length / 2)");
+}
+
 /**
  * Returns the id of the CustomerSuccess with the most customers
  * @param {array} customerSuccess
@@ -9,6 +36,10 @@ function customerSuccessBalancing(
   customers,
   customerSuccessAway
 ) {
+
+  verifyCustomers(customers);
+  verifyCustomerSuccess(customerSuccess);
+  verifyCustomerSucessAbstentions(customerSuccessAway, customerSuccess.length)
 
   let availableCustomerSuccess = customerSuccess.filter((cs) => {
     for (let index = 0; index < customerSuccessAway.length; index += 1) {
