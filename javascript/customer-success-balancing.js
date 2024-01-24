@@ -113,7 +113,7 @@ function customerSuccessBalancing(
 
   let availableCustomerSuccess = filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess);
 
-  // sorts the arrays in crescent order
+  // sorts the arrays by scores in crescent order
   availableCustomerSuccess.sort((a,b) => a.score - b.score);
   customers.sort((a,b) => a.score - b.score);
 
