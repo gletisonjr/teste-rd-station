@@ -69,8 +69,8 @@ function filterCustomerSucessAbstentions(customerSuccessAway, customerSuccess) {
 /**
  * Returns an array with the ids of the customerSucess and its customers that he/she attends.
  * Returns an empty array if no CustomerSuccess attends
- * @param {array} availableCustomerSuccess
  * @param {array} customers
+ * @param {array} availableCustomerSuccess
  */
 function connectCustomerSucessToCustomers(customers, availableCustomerSuccess) {
   let customersAttendedByCS = [];
